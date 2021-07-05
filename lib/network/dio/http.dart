@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:dio/adapter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:musket/common/logger.dart';
@@ -79,7 +80,8 @@ class Http {
       asFormData();
       await _createMultipartFiles();
     }
-    if (options.headers != null && options.headers[Headers.contentTypeHeader] == contentTypeFormData) {
+    if (options.headers != null &&
+        options.headers[Headers.contentTypeHeader] == contentTypeFormData) {
       data = FormData.fromMap(_params);
     } else {
       data = _params;
@@ -119,7 +121,8 @@ class Http {
     } else {
       errorResponse = Response(statusCode: Code.failed, request: e.request);
     }
-    if (e.type == DioErrorType.CONNECT_TIMEOUT || e.type == DioErrorType.RECEIVE_TIMEOUT) {
+    if (e.type == DioErrorType.CONNECT_TIMEOUT ||
+        e.type == DioErrorType.RECEIVE_TIMEOUT) {
       errorResponse.statusCode = Code.networkTimeout;
     }
     return ResultData(
@@ -152,7 +155,8 @@ final _dio = _initDioInstance();
 
 Dio _initDioInstance() {
   Dio dio = Dio();
-  dio.options.headers[Headers.contentTypeHeader] = Headers.formUrlEncodedContentType;
+  dio.options.headers[Headers.contentTypeHeader] =
+      Headers.formUrlEncodedContentType;
   dio.options.headers[Headers.acceptHeader] = Headers.jsonContentType;
   dio.options.connectTimeout = 15 * 1000;
   if (kDebugMode) {
@@ -165,7 +169,21 @@ Dio _initDioInstance() {
   }
   // ResponseInterceptor 需要放到 LogInterceptor 后面，否则打印不出 response 的 log
   dio.interceptors.add(ResponseInterceptor());
+  checkForCharlesProxy(dio);
   return dio;
+}
+
+void checkForCharlesProxy(Dio dio) {
+  const charlesIp =
+      String.fromEnvironment('CHARLES_PROXY_IP', defaultValue: null);
+  if (charlesIp == null) return;
+  debugPrint('#CharlesProxyEnabled');
+  (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+      (client) {
+    client.findProxy = (uri) => "PROXY $charlesIp:8888;";
+    client.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+  };
 }
 
 void mergeDioBaseOptions({
@@ -208,7 +226,8 @@ void _logger(Object object) {
 MediaType parseMediaType(File file) {
   if (file?.path?.isEmpty ?? true) return null;
   var extensionIndex = file.path.lastIndexOf('.');
-  if (extensionIndex == -1 || extensionIndex == file.path.length - 1) return null;
+  if (extensionIndex == -1 || extensionIndex == file.path.length - 1)
+    return null;
   var extension = file.path.substring(extensionIndex + 1).toLowerCase();
 
   MediaType mediaType;
@@ -295,9 +314,11 @@ const Map<String, String> mimeTypes = const {
   "xhtml": "application/xhtml+xml",
   "xspf": "application/xspf+xml",
   "zip": "application/zip",
-  "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "docx":
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  "pptx":
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
   "mid": "audio/midi",
   "midi": "audio/midi",
   "kar": "audio/midi",
