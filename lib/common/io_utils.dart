@@ -63,12 +63,13 @@ Future<File> pickImage({
   return result;
 }
 
-Future<File> retrieveLostImage() async {
+Future<PickedFile> retrieveLostImage() async {
   if (!Platform.isAndroid) {
     return null;
   }
-  var lostDataResponse = await ImagePicker.retrieveLostData();
-  if (lostDataResponse?.file != null && lostDataResponse.type == RetrieveType.image) {
+  LostData lostDataResponse = await ImagePicker().getLostData();
+  if (lostDataResponse?.file != null &&
+      lostDataResponse.type == RetrieveType.image) {
     return lostDataResponse.file;
   }
   return null;
@@ -87,14 +88,16 @@ Future<File> pickVideo({
   ImageSource source: ImageSource.gallery,
   Duration maxDuration,
 }) async {
-  var pickedFile = await ImagePicker().getVideo(source: source, maxDuration: maxDuration);
+  var pickedFile =
+      await ImagePicker().getVideo(source: source, maxDuration: maxDuration);
   if (pickedFile?.path?.isEmpty ?? true) return null;
   var origin = File(pickedFile.path);
   if (pickedFile.path.endsWith('.jpg')) {
     /// https://github.com/flutter/flutter/issues/52419
     /// 从相册选择视频返回文件扩展名为.jpg，修改扩展名为.mp4
     var jpgIndex = pickedFile.path.lastIndexOf('.jpg');
-    origin = await origin.rename(pickedFile.path.replaceRange(jpgIndex, pickedFile.path.length, '.mp4'));
+    origin = await origin.rename(
+        pickedFile.path.replaceRange(jpgIndex, pickedFile.path.length, '.mp4'));
   }
   var result = origin;
   return result;

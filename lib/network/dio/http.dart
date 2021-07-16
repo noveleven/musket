@@ -119,10 +119,13 @@ class Http {
     if (e.response != null) {
       errorResponse = e.response;
     } else {
-      errorResponse = Response(statusCode: Code.failed, request: e.request);
+      errorResponse = Response(
+        statusCode: Code.failed,
+        requestOptions: e.requestOptions,
+      );
     }
-    if (e.type == DioErrorType.CONNECT_TIMEOUT ||
-        e.type == DioErrorType.RECEIVE_TIMEOUT) {
+    if (e.type == DioErrorType.connectTimeout ||
+        e.type == DioErrorType.receiveTimeout) {
       errorResponse.statusCode = Code.networkTimeout;
     }
     return ResultData(
@@ -177,7 +180,6 @@ void checkForCharlesProxy(Dio dio) {
   const charlesIp =
       String.fromEnvironment('CHARLES_PROXY_IP', defaultValue: null);
   if (charlesIp == null) return;
-  debugPrint('#CharlesProxyEnabled');
   (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
       (client) {
     client.findProxy = (uri) => "PROXY $charlesIp:8888;";
@@ -202,7 +204,7 @@ void mergeDioBaseOptions({
   bool followRedirects,
   int maxRedirects,
 }) {
-  _dio.options = _dio.options.merge(
+  _dio.options = new BaseOptions(
     method: method == null ? null : _methodToString(method),
     baseUrl: baseUrl,
     queryParameters: queryParameters,

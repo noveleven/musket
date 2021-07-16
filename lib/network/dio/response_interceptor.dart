@@ -4,18 +4,19 @@ import 'result_data.dart';
 
 class ResponseInterceptor extends InterceptorsWrapper {
   @override
-  Future onResponse(Response response) async {
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
     bool isSuccessful = response.statusCode >= 200 && response.statusCode < 300;
-    return ResultData(
+    response.data = ResultData(
       body: response.data,
       isSuccessful: isSuccessful,
       statusCode: response.statusCode,
       headers: response.headers,
     );
+    handler.next(response);
   }
 
   @override
-  Future onError(DioError err) {
-    return super.onError(err);
+  void onError(DioError err, ErrorInterceptorHandler handler) {
+    handler.next(err);
   }
 }
