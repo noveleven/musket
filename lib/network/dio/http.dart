@@ -16,6 +16,7 @@ const contentTypeFormData = 'multipart/form-data';
 
 class Http {
   String url;
+  String savePath;
   Method method;
   Map<String, File> _files = {};
   Map<String, dynamic> _params = {};
@@ -42,6 +43,11 @@ class Http {
   Http.put([this.url]) {
     method = Method.put;
   }
+
+  Http.download(
+    this.url,
+    this.savePath,
+  );
 
   Http addHeader(String key, dynamic value) {
     options.headers ??= <String, dynamic>{};
@@ -71,6 +77,19 @@ class Http {
   Http addParams(Map<String, dynamic> params) {
     params.forEach(addParam);
     return this;
+  }
+
+  Future<T> download<T>() async {
+    try {
+      Response response = await pubDio.download(
+        url,
+        savePath,
+        cancelToken: cancelToken,
+        options: options,
+        onReceiveProgress: onReceiveProgress,
+      );
+      return response.data;
+    } on DioError catch (e) {}
   }
 
   /// see [ResponseInterceptor]
@@ -155,6 +174,7 @@ String _methodToString(Method method) {
 }
 
 final _dio = _initDioInstance();
+final pubDio = new Dio();
 
 Dio _initDioInstance() {
   Dio dio = Dio();
