@@ -12,7 +12,8 @@ class GlowingOverScrollBehavior extends ScrollBehavior {
         assert(showTrailing != null);
 
   @override
-  Widget buildViewportChrome(BuildContext context, Widget child, AxisDirection axisDirection) {
+  Widget buildViewportChrome(
+      BuildContext context, Widget child, AxisDirection axisDirection) {
     switch (getPlatform(context)) {
       case TargetPlatform.iOS:
         return child;
@@ -23,7 +24,7 @@ class GlowingOverScrollBehavior extends ScrollBehavior {
           showLeading: showLeading,
           showTrailing: showTrailing,
           axisDirection: axisDirection,
-          color: Theme.of(context).accentColor,
+          color: Theme.of(context).colorScheme.secondary,
         );
       default:
         return child;

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:musket/common/toasts.dart';
 
 mixin DoubleClickExitAppMixin {
-  DateTime _lastPressBackTime;
+  late DateTime _lastPressBackTime;
 
   String get pressAgainTips;
 
@@ -10,7 +10,8 @@ mixin DoubleClickExitAppMixin {
 
   Future<bool> onWillPop() async {
     if (_lastPressBackTime == null ||
-        DateTime.now().difference(_lastPressBackTime) > Duration(milliseconds: doubleClickIntervalMillis)) {
+        DateTime.now().difference(_lastPressBackTime) >
+            Duration(milliseconds: doubleClickIntervalMillis)) {
       _lastPressBackTime = DateTime.now();
       Toasts.show(msg: pressAgainTips);
       return false;
@@ -18,13 +19,14 @@ mixin DoubleClickExitAppMixin {
     return true;
   }
 
-  WillPopScope willPopScope({Key key, @required Widget child}) {
+  WillPopScope willPopScope({Key? key, required Widget child}) {
     return WillPopScope(key: key, onWillPop: onWillPop, child: child);
   }
 }
 
 extension WillPopScopeExtension on Widget {
-  WillPopScope intoDoubleTapExitApp(DoubleClickExitAppMixin doubleClickExitApp) {
+  WillPopScope intoDoubleTapExitApp(
+      DoubleClickExitAppMixin doubleClickExitApp) {
     return doubleClickExitApp.willPopScope(child: this);
   }
 }

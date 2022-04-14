@@ -37,13 +37,13 @@ String renderFileSize(double bytes) {
   return '${bytes.toStringAsFixed(2)}${unitArr[index]}';
 }
 
-Future<File> pickImage({
+Future<File?> pickImage({
   ImageSource source: ImageSource.gallery,
   int maxFileLength = 2 * 1024 * 1024,
 }) async {
-  var pickedFile = await ImagePicker().getImage(source: source);
+  var pickedFile = await ImagePicker().pickImage(source: source);
   if (pickedFile?.path?.isEmpty ?? true) return null;
-  var origin = File(pickedFile.path);
+  var origin = File(pickedFile!.path);
   var result = origin;
   int breaker = 0; // iOS 上 FlutterNativeImage 可能存在 bug，避免死循环
   while (maxFileLength != null && result.lengthSync() > maxFileLength) {
@@ -63,11 +63,11 @@ Future<File> pickImage({
   return result;
 }
 
-Future<PickedFile> retrieveLostImage() async {
+Future<XFile?> retrieveLostImage() async {
   if (!Platform.isAndroid) {
     return null;
   }
-  LostData lostDataResponse = await ImagePicker().getLostData();
+  LostDataResponse lostDataResponse = await ImagePicker().retrieveLostData();
   if (lostDataResponse?.file != null &&
       lostDataResponse.type == RetrieveType.image) {
     return lostDataResponse.file;
@@ -84,14 +84,14 @@ Future<File> renameFileToMillis(File origin) {
   return origin.rename(newPath);
 }
 
-Future<File> pickVideo({
+Future<File?> pickVideo({
   ImageSource source: ImageSource.gallery,
-  Duration maxDuration,
+  Duration? maxDuration,
 }) async {
   var pickedFile =
-      await ImagePicker().getVideo(source: source, maxDuration: maxDuration);
+      await ImagePicker().pickVideo(source: source, maxDuration: maxDuration);
   if (pickedFile?.path?.isEmpty ?? true) return null;
-  var origin = File(pickedFile.path);
+  var origin = File(pickedFile!.path);
   if (pickedFile.path.endsWith('.jpg')) {
     /// https://github.com/flutter/flutter/issues/52419
     /// 从相册选择视频返回文件扩展名为.jpg，修改扩展名为.mp4

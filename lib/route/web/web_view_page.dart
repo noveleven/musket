@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:musket/common/logger.dart';
 import 'package:musket/route/mixin/safe_state.dart';
@@ -14,13 +13,14 @@ class WebViewPage extends StatefulWidget {
 
   static Future<void> push(
     context, {
-    @required String url,
-    String routeName,
-    String title,
+    required String url,
+    String? routeName,
+    String? title,
     bool titleWithBack = true,
-    Widget action,
+    Widget? action,
   }) {
-    return Routes.push(context, routeName ?? WebViewPage.routeName ?? defaultRouteName, {
+    return Routes.push(
+        context, routeName ?? WebViewPage.routeName ?? defaultRouteName, {
       'url': url,
       'title': title,
       'action': action,
@@ -28,10 +28,10 @@ class WebViewPage extends StatefulWidget {
     });
   }
 
-  final Map<String, dynamic> arguments;
+  final Map<String, dynamic>? arguments;
 
   const WebViewPage({
-    Key key,
+    Key? key,
     this.arguments,
   }) : super(key: key);
 
@@ -40,7 +40,7 @@ class WebViewPage extends StatefulWidget {
 }
 
 class _WebViewPageState extends SafeState<WebViewPage> {
-  bool isLoading;
+  late bool isLoading;
 
   @override
   void initState() {
@@ -51,13 +51,13 @@ class _WebViewPageState extends SafeState<WebViewPage> {
   @override
   Widget build(BuildContext context) {
     var arguments = widget.arguments ?? Routes.getArguments(context);
-    String url;
+    String? url;
     String title;
-    Widget right;
+    Widget? right;
     bool titleWithBack;
     if (arguments is Map) {
       Logger.log('arguments: $arguments');
-      url = arguments['url'];
+      url = arguments!['url'];
       assert(url != null);
       title = arguments['title'] ?? '';
       right = arguments['action'] is Widget ? arguments['action'] : null;
@@ -73,7 +73,8 @@ class _WebViewPageState extends SafeState<WebViewPage> {
         left: titleWithBack ? const BackButton() : null,
       ),
       body: Container(
-        constraints: BoxConstraints.expand(width: MediaQuery.of(context).size.width),
+        constraints:
+            BoxConstraints.expand(width: MediaQuery.of(context).size.width),
         child: IndexedStack(
           index: isLoading ? 1 : 0,
           children: <Widget>[

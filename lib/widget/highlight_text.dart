@@ -1,26 +1,28 @@
 import 'package:flutter/material.dart';
 
 class HighlightText extends StatelessWidget {
-  final String text;
-  final String highlight;
-  final TextStyle style;
+  final String? text;
+  final String? highlight;
+  final TextStyle? style;
   final TextStyle highlightStyle;
-  final Color highlightColor;
+  final Color? highlightColor;
   final bool ignoreCase;
 
   HighlightText({
-    Key key,
+    Key? key,
     this.text,
     this.highlight,
     this.style,
     this.highlightColor,
-    TextStyle highlightStyle,
+    TextStyle? highlightStyle,
     this.ignoreCase: false,
   })  : assert(
           highlightColor == null || highlightStyle == null,
           'highlightColor and highlightStyle cannot be provided at same time.',
         ),
-        highlightStyle = highlightStyle ?? style?.copyWith(color: highlightColor) ?? TextStyle(color: highlightColor),
+        highlightStyle = highlightStyle ??
+            style?.copyWith(color: highlightColor) ??
+            TextStyle(color: highlightColor),
         super(key: key);
 
   @override
@@ -31,7 +33,7 @@ class HighlightText extends StatelessWidget {
     }
 
     var sourceText = ignoreCase ? text.toLowerCase() : text;
-    var targetHighlight = ignoreCase ? highlight.toLowerCase() : highlight;
+    var targetHighlight = ignoreCase ? highlight!.toLowerCase() : highlight!;
 
     List<TextSpan> spans = [];
     int start = 0;
@@ -47,7 +49,7 @@ class HighlightText extends StatelessWidget {
         // normal text before highlight
         spans.add(_normalSpan(text.substring(start, indexOfHighlight)));
       }
-      start = indexOfHighlight + highlight.length;
+      start = indexOfHighlight + highlight!.length;
       spans.add(_highlightSpan(text.substring(indexOfHighlight, start)));
     } while (true);
 

@@ -30,7 +30,8 @@ bool isBeforeYesterday(int time) {
   }
   var date = DateTime.fromMillisecondsSinceEpoch(time);
   var yesterdayNow = DateTime.now().subtract(Duration(days: 1));
-  var yesterday = DateTime(yesterdayNow.year, yesterdayNow.month, yesterdayNow.day);
+  var yesterday =
+      DateTime(yesterdayNow.year, yesterdayNow.month, yesterdayNow.day);
   return date.isBefore(yesterday);
 }
 

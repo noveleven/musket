@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:dio/adapter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:musket/common/logger.dart';
@@ -15,16 +14,16 @@ import 'result_data.dart';
 const contentTypeFormData = 'multipart/form-data';
 
 class Http {
-  String url;
-  String savePath;
-  Method method;
+  String? url;
+  String? savePath;
+  Method? method;
   Map<String, File> _files = {};
   Map<String, dynamic> _params = {};
   HttpOptions options = HttpOptions();
 
-  HttpCancelToken cancelToken;
-  HttpProgressCallback onSendProgress;
-  HttpProgressCallback onReceiveProgress;
+  HttpCancelToken? cancelToken;
+  HttpProgressCallback? onSendProgress;
+  HttpProgressCallback? onReceiveProgress;
 
   Http({this.method, this.url});
 
@@ -51,7 +50,7 @@ class Http {
 
   Http addHeader(String key, dynamic value) {
     options.headers ??= <String, dynamic>{};
-    options.headers[key] = value;
+    options.headers![key] = value;
     return this;
   }
 
@@ -79,28 +78,30 @@ class Http {
     return this;
   }
 
-  Future<T> download<T>() async {
+  Future<T?> download<T>() async {
     try {
-      Response response = await pubDio.download(
-        url,
+      Response response = await _dio.download(
+        url!,
         savePath,
         cancelToken: cancelToken,
         options: options,
         onReceiveProgress: onReceiveProgress,
       );
       return response.data;
-    } on DioError catch (e) {}
+    } on DioError {
+      return null;
+    }
   }
 
   /// see [ResponseInterceptor]
-  Future<ResultData> call<T>() async {
+  Future<ResultData?> call<T>() async {
     var data;
     if (_files.isNotEmpty) {
       asFormData();
       await _createMultipartFiles();
     }
     if (options.headers != null &&
-        options.headers[Headers.contentTypeHeader] == contentTypeFormData) {
+        options.headers![Headers.contentTypeHeader] == contentTypeFormData) {
       data = FormData.fromMap(_params);
     } else {
       data = _params;
@@ -109,7 +110,7 @@ class Http {
 
     try {
       Response<ResultData> response = await _dio.request<ResultData>(
-        url,
+        url!,
         data: method == Method.get ? null : data,
         queryParameters: method == Method.get ? data : null,
         cancelToken: cancelToken,
@@ -134,7 +135,7 @@ class Http {
   }
 
   static ResultData _responseError(DioError e) {
-    Response errorResponse;
+    Response? errorResponse;
     if (e.response != null) {
       errorResponse = e.response;
     } else {
@@ -145,12 +146,12 @@ class Http {
     }
     if (e.type == DioErrorType.connectTimeout ||
         e.type == DioErrorType.receiveTimeout) {
-      errorResponse.statusCode = Code.networkTimeout;
+      errorResponse!.statusCode = Code.networkTimeout;
     }
     return ResultData(
       body: e.message,
       isSuccessful: false,
-      statusCode: errorResponse.statusCode,
+      statusCode: errorResponse!.statusCode,
       error: e,
     );
   }
@@ -158,7 +159,7 @@ class Http {
 
 enum Method { get, post, delete, put }
 
-String _methodToString(Method method) {
+String _methodToString(Method? method) {
   switch (method) {
     case Method.get:
       return 'GET';
@@ -174,7 +175,6 @@ String _methodToString(Method method) {
 }
 
 final _dio = _initDioInstance();
-final pubDio = new Dio();
 
 Dio _initDioInstance() {
   Dio dio = Dio();
@@ -192,37 +192,24 @@ Dio _initDioInstance() {
   }
   // ResponseInterceptor 需要放到 LogInterceptor 后面，否则打印不出 response 的 log
   dio.interceptors.add(ResponseInterceptor());
-  checkForCharlesProxy(dio);
   return dio;
 }
 
-void checkForCharlesProxy(Dio dio) {
-  const charlesIp =
-      String.fromEnvironment('CHARLES_PROXY_IP', defaultValue: null);
-  if (charlesIp == null) return;
-  (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
-      (client) {
-    client.findProxy = (uri) => "PROXY $charlesIp:8888;";
-    client.badCertificateCallback =
-        (X509Certificate cert, String host, int port) => true;
-  };
-}
-
 void mergeDioBaseOptions({
-  String baseUrl,
-  Method method,
-  Map<String, dynamic> queryParameters,
-  String path,
-  int connectTimeout,
-  int receiveTimeout,
-  int sendTimeout,
-  Map<String, dynamic> extra,
-  Map<String, dynamic> headers,
-  String contentType,
-  bool validateStatus(int status),
-  bool receiveDataWhenStatusError,
-  bool followRedirects,
-  int maxRedirects,
+  required String baseUrl,
+  Method? method,
+  Map<String, dynamic>? queryParameters,
+  String? path,
+  int? connectTimeout,
+  int? receiveTimeout,
+  int? sendTimeout,
+  Map<String, dynamic>? extra,
+  Map<String, dynamic>? headers,
+  String? contentType,
+  bool validateStatus(int? status)?,
+  bool? receiveDataWhenStatusError,
+  bool? followRedirects,
+  int? maxRedirects,
 }) {
   _dio.options = new BaseOptions(
     method: method == null ? null : _methodToString(method),
@@ -245,16 +232,16 @@ void _logger(Object object) {
   Logger.log('[Dio] $object'.replaceAll('\n', '\n\t\t\t'));
 }
 
-MediaType parseMediaType(File file) {
+MediaType? parseMediaType(File file) {
   if (file?.path?.isEmpty ?? true) return null;
   var extensionIndex = file.path.lastIndexOf('.');
   if (extensionIndex == -1 || extensionIndex == file.path.length - 1)
     return null;
   var extension = file.path.substring(extensionIndex + 1).toLowerCase();
 
-  MediaType mediaType;
+  MediaType? mediaType;
   if (mimeTypes.containsKey(extension)) {
-    var split = mimeTypes[extension].split('/');
+    var split = mimeTypes[extension]!.split('/');
     mediaType = MediaType(split[0], split[1]);
   }
   return mediaType ?? MediaType('application', 'octet-stream');

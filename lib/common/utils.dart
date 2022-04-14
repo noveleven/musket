@@ -28,24 +28,29 @@ bool isSameDay(dynamic day1, dynamic day2) {
     day2 = DateTime.fromMillisecondsSinceEpoch(day2);
   }
   if (day1 is DateTime && day2 is DateTime) {
-    return day1.year == day2.year && day1.month == day2.month && day1.day == day2.day;
+    return day1.year == day2.year &&
+        day1.month == day2.month &&
+        day1.day == day2.day;
   }
   return false;
 }
 
 @Deprecated('use [formatTime] instead')
-String parseTime(BuildContext context, int time, String languageCode, {String datePattern = 'yyyy-MM-dd HH:mm:ss'}) {
+String parseTime(BuildContext context, int time, String languageCode,
+    {String datePattern = 'yyyy-MM-dd HH:mm:ss'}) {
   return formatTime(time, datePattern, languageCode);
 }
 
 @Deprecated('use [formatDateTime] instead')
-String parseDateTime(BuildContext context, DateTime dateTime, String languageCode,
+String parseDateTime(
+    BuildContext context, DateTime dateTime, String languageCode,
     {String datePattern = 'yyyy-MM-dd HH:mm:ss'}) {
   var dateFormat = DateFormat(datePattern, languageCode);
   return dateFormat.format(dateTime);
 }
 
-String formatTime(int time, [String pattern = 'yyyy-MM-dd HH:mm:ss', String languageCode]) {
+String formatTime(int time,
+    [String pattern = 'yyyy-MM-dd HH:mm:ss', String? languageCode]) {
   if (time == null) {
     return '';
   }
@@ -56,7 +61,8 @@ String formatTime(int time, [String pattern = 'yyyy-MM-dd HH:mm:ss', String lang
   return formatDateTime(dateTime, pattern, languageCode);
 }
 
-String formatDateTime(DateTime dateTime, [String pattern = 'yyyy-MM-dd HH:mm:ss', String languageCode]) {
+String formatDateTime(DateTime dateTime,
+    [String pattern = 'yyyy-MM-dd HH:mm:ss', String? languageCode]) {
   return DateFormat(pattern, languageCode).format(dateTime);
 }
 
@@ -83,8 +89,10 @@ String formatAmount(num value, [int minDigits = 2, int maxDigits = 2]) {
 String durationToString(Duration duration) {
   if (duration == null || duration <= Duration.zero) return '00:00:00';
   String twoDigitsHours = toDigits(duration.inHours);
-  String twoDigitMinutes = toDigits(duration.inMinutes.remainder(Duration.minutesPerHour));
-  String twoDigitSeconds = toDigits(duration.inSeconds.remainder(Duration.secondsPerMinute));
+  String twoDigitMinutes =
+      toDigits(duration.inMinutes.remainder(Duration.minutesPerHour));
+  String twoDigitSeconds =
+      toDigits(duration.inSeconds.remainder(Duration.secondsPerMinute));
   return '$twoDigitsHours:$twoDigitMinutes:$twoDigitSeconds';
 }
 
@@ -126,7 +134,7 @@ void clearFocus(BuildContext context) {
   FocusScope.of(context).unfocus();
 }
 
-Widget wrapClearFocus(BuildContext context, {Widget child}) {
+Widget wrapClearFocus(BuildContext context, {Widget? child}) {
   return GestureDetector(
     behavior: HitTestBehavior.translucent,
     onTap: () => clearFocus(context),
@@ -144,7 +152,9 @@ List<T> map<E, T>(List<E> src, T indexMapper(E e, int index)) {
 
 /// 随机 delay 一段时间，返回一个 Future
 /// [max] 和 [min] 单位毫秒
-Future<T> randomWait<T>({int min = 300, int max = 600, FutureOr<T> computation()}) {
+Future<T> randomWait<T>(
+    {int min = 300, int max = 600, FutureOr<T> computation()?}) {
   if (max <= min) max = min + 1;
-  return Future<T>.delayed(Duration(milliseconds: Random().nextInt(max - min) + min), computation);
+  return Future<T>.delayed(
+      Duration(milliseconds: Random().nextInt(max - min) + min), computation);
 }

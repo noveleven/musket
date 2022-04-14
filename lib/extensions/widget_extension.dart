@@ -9,13 +9,13 @@ class Edges extends EdgeInsets {
   /// [horizontal],[vertical]
   /// [all]
   const Edges({
-    double top,
-    double right,
-    double bottom,
-    double left,
-    double horizontal,
-    double vertical,
-    double all,
+    double? top,
+    double? right,
+    double? bottom,
+    double? left,
+    double? horizontal,
+    double? vertical,
+    double? all,
   }) : super.only(
           top: top ?? vertical ?? all ?? 0.0,
           right: right ?? horizontal ?? all ?? 0.0,
@@ -26,14 +26,14 @@ class Edges extends EdgeInsets {
 
 extension WidgetExtension on Widget {
   Material intoMaterial({
-    Key key,
+    Key? key,
     MaterialType type = MaterialType.canvas,
     double elevation = 0.0,
-    Color color,
+    Color? color,
     Color shadowColor = const Color(0xFF000000),
-    TextStyle textStyle,
-    BorderRadiusGeometry borderRadius,
-    ShapeBorder shape,
+    TextStyle? textStyle,
+    BorderRadiusGeometry? borderRadius,
+    ShapeBorder? shape,
     bool borderOnForeground = true,
     Clip clipBehavior = Clip.none,
     Duration animationDuration = kThemeChangeDuration,
@@ -55,16 +55,16 @@ extension WidgetExtension on Widget {
   }
 
   Container intoContainer({
-    EdgeInsetsGeometry margin,
-    EdgeInsetsGeometry padding,
-    Color color,
-    Decoration decoration,
-    Decoration foregroundDecoration,
-    double width,
-    double height,
-    BoxConstraints constraints,
-    AlignmentGeometry alignment,
-    Matrix4 transform,
+    EdgeInsetsGeometry? margin,
+    EdgeInsetsGeometry? padding,
+    Color? color,
+    Decoration? decoration,
+    Decoration? foregroundDecoration,
+    double? width,
+    double? height,
+    BoxConstraints? constraints,
+    AlignmentGeometry? alignment,
+    Matrix4? transform,
     Clip clipBehavior = Clip.none,
   }) {
     return Container(
@@ -99,13 +99,13 @@ extension WidgetExtension on Widget {
   /// [horizontal],[vertical]
   /// [all]
   Container margin({
-    double top,
-    double right,
-    double bottom,
-    double left,
-    double horizontal,
-    double vertical,
-    double all,
+    double? top,
+    double? right,
+    double? bottom,
+    double? left,
+    double? horizontal,
+    double? vertical,
+    double? all,
   }) {
     return intoContainer(
       margin: Edges(
@@ -125,13 +125,13 @@ extension WidgetExtension on Widget {
   /// [horizontal],[vertical]
   /// [all]
   Container padding({
-    double top,
-    double right,
-    double bottom,
-    double left,
-    double horizontal,
-    double vertical,
-    double all,
+    double? top,
+    double? right,
+    double? bottom,
+    double? left,
+    double? horizontal,
+    double? vertical,
+    double? all,
   }) {
     return intoContainer(
       padding: Edges(
@@ -147,13 +147,13 @@ extension WidgetExtension on Widget {
   }
 
   SingleChildScrollView intoSingleChildScrollView({
-    Key key,
+    Key? key,
     Axis scrollDirection = Axis.vertical,
     bool reverse = false,
-    EdgeInsetsGeometry padding,
-    bool primary,
-    ScrollPhysics physics,
-    ScrollController controller,
+    EdgeInsetsGeometry? padding,
+    bool? primary,
+    ScrollPhysics? physics,
+    ScrollController? controller,
     DragStartBehavior dragStartBehavior = DragStartBehavior.start,
   }) {
     return SingleChildScrollView(
@@ -170,14 +170,14 @@ extension WidgetExtension on Widget {
   }
 
   DefaultTextStyle intoTextStyle({
-    Key key,
-    TextStyle style,
-    TextAlign textAlign,
+    Key? key,
+    required TextStyle style,
+    TextAlign? textAlign,
     bool softWrap = true,
     TextOverflow overflow = TextOverflow.clip,
-    int maxLines,
+    int? maxLines,
     TextWidthBasis textWidthBasis = TextWidthBasis.parent,
-    TextHeightBehavior textHeightBehavior,
+    TextHeightBehavior? textHeightBehavior,
   }) {
     return DefaultTextStyle(
       key: key,
@@ -193,7 +193,7 @@ extension WidgetExtension on Widget {
   }
 
   Visibility intoVisibility({
-    Key key,
+    Key? key,
     Widget replacement = const SizedBox.shrink(),
     bool visible = true,
     bool maintainState = false,
@@ -217,35 +217,47 @@ extension WidgetExtension on Widget {
 
   /// 控制 over scroll 的阴影效果
   ScrollConfiguration intoGlowingOverScrollConfiguration({
-    Key key,
+    Key? key,
     bool showLeading: true,
     bool showTrailing: true,
   }) {
     return ScrollConfiguration(
       key: key,
-      behavior: GlowingOverScrollBehavior(showLeading: showLeading, showTrailing: showTrailing),
+      behavior: GlowingOverScrollBehavior(
+          showLeading: showLeading, showTrailing: showTrailing),
       child: this,
     );
   }
 
-  SliverToBoxAdapter intoSliverAdapter({Key key}) {
+  SliverToBoxAdapter intoSliverAdapter({Key? key}) {
     return SliverToBoxAdapter(child: this, key: key);
   }
 
   SliverFillRemaining intoSliverFillRemaining({
-    Key key,
+    Key? key,
     bool hasScrollBody = true,
     bool fillOverscroll = false,
   }) {
-    return SliverFillRemaining(key: key, hasScrollBody: hasScrollBody, fillOverscroll: fillOverscroll, child: this);
+    return SliverFillRemaining(
+        key: key,
+        hasScrollBody: hasScrollBody,
+        fillOverscroll: fillOverscroll,
+        child: this);
   }
 
-  Opacity intoOpacity({Key key, @required double opacity, bool alwaysIncludeSemantics = false}) {
-    return Opacity(key: key, opacity: opacity, alwaysIncludeSemantics: alwaysIncludeSemantics, child: this);
+  Opacity intoOpacity(
+      {Key? key,
+      required double opacity,
+      bool alwaysIncludeSemantics = false}) {
+    return Opacity(
+        key: key,
+        opacity: opacity,
+        alwaysIncludeSemantics: alwaysIncludeSemantics,
+        child: this);
   }
 
   SafeArea intoSafeArea({
-    Key key,
+    Key? key,
     bool left = true,
     bool top = true,
     bool right = true,

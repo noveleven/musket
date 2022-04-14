@@ -7,7 +7,11 @@ import 'package:package_info/package_info.dart';
 mixin BaseConfig {
   static const bool debug = !kReleaseMode;
 
-  static String get platform => Platform.isAndroid ? 'android' : Platform.isIOS ? 'ios' : 'web';
+  static String get platform => Platform.isAndroid
+      ? 'android'
+      : Platform.isIOS
+          ? 'ios'
+          : 'web';
 
   Future<String> get appVersion async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -19,7 +23,7 @@ mixin BaseConfig {
     return packageInfo.packageName;
   }
 
-  Future<String> get osVersion async {
+  Future<String?> get osVersion async {
     if (Platform.isAndroid) {
       var deviceInfo = await androidDeviceInfo;
       return deviceInfo?.version?.release;
@@ -29,7 +33,7 @@ mixin BaseConfig {
     }
   }
 
-  Future<String> get deviceId async {
+  Future<String?> get deviceId async {
     if (Platform.isAndroid) {
       var deviceInfo = await androidDeviceInfo;
       return deviceInfo?.androidId;
@@ -39,7 +43,7 @@ mixin BaseConfig {
     }
   }
 
-  Future<String> get deviceModel async {
+  Future<String?> get deviceModel async {
     if (Platform.isAndroid) {
       var deviceInfo = await androidDeviceInfo;
       return deviceInfo?.model;
@@ -49,7 +53,7 @@ mixin BaseConfig {
     }
   }
 
-  Future<String> get manufacturer async {
+  Future<String?> get manufacturer async {
     if (Platform.isAndroid) {
       var deviceInfo = await androidDeviceInfo;
       return deviceInfo?.manufacturer;
@@ -59,7 +63,7 @@ mixin BaseConfig {
     }
   }
 
-  Future<String> get brand async {
+  Future<String?> get brand async {
     if (Platform.isAndroid) {
       var deviceInfo = await androidDeviceInfo;
       return deviceInfo?.brand;
@@ -81,24 +85,24 @@ mixin BaseConfig {
     return '${Platform.operatingSystem} not support yet.';
   }
 
-  Future<AndroidDeviceInfo> get androidDeviceInfo async {
+  Future<AndroidDeviceInfo?> get androidDeviceInfo async {
     if (!Platform.isAndroid) return null;
     try {
       final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
       var androidDeviceInfo = await deviceInfoPlugin.androidInfo;
       return androidDeviceInfo;
-    } catch (PlatformException) {
+    } catch (e) {
       return null;
     }
   }
 
-  Future<IosDeviceInfo> get iosDeviceInfo async {
+  Future<IosDeviceInfo?> get iosDeviceInfo async {
     if (!Platform.isIOS) return null;
     try {
       final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
       var iosDeviceInfo = await deviceInfoPlugin.iosInfo;
       return iosDeviceInfo;
-    } catch (PlatformException) {
+    } catch (e) {
       return null;
     }
   }

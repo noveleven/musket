@@ -6,9 +6,9 @@ import 'package:musket/musket.dart';
 const double kDefaultBannerRatio = 1.618;
 
 class BannerResource {
-  String imageUrl;
+  String? imageUrl;
 
-  BannerResource({String image}) : imageUrl = image;
+  BannerResource({String? image}) : imageUrl = image;
 }
 
 class BannerController extends SwiperController {}
@@ -16,26 +16,26 @@ class BannerController extends SwiperController {}
 class SwipeBanner<T extends BannerResource> extends StatelessWidget {
   final List<T> banners;
   final bool autoPlay;
-  final void Function(T data) onTap;
-  final EdgeInsetsGeometry margin;
+  final void Function(T data)? onTap;
+  final EdgeInsetsGeometry? margin;
   final Color imageBackground;
   final Color dotColor;
   final Color dotActiveColor;
   final double dotSize;
   final double dotSpace;
-  final BorderRadius borderRadius;
+  final BorderRadius? borderRadius;
   final double ratio;
-  final BannerController controller;
-  final SwiperDataBuilder itemBuilder;
+  final BannerController? controller;
+  final SwiperDataBuilder? itemBuilder;
   final bool outer;
   final bool loop;
   final bool showPagination;
-  final int index;
-  final SwiperPlugin pagination;
+  final int? index;
+  final SwiperPlugin? pagination;
 
   const SwipeBanner({
-    Key key,
-    @required this.banners,
+    Key? key,
+    required this.banners,
     this.autoPlay: true,
     this.onTap,
     this.margin,
@@ -51,8 +51,8 @@ class SwipeBanner<T extends BannerResource> extends StatelessWidget {
     this.index,
     this.pagination,
     this.outer = false,
-    bool loop,
-    bool showPagination,
+    bool? loop,
+    bool? showPagination,
   })  : assert(autoPlay != null),
         assert(ratio != null && ratio > 0),
         this.loop = loop ?? (banners?.length ?? 0) > 1,
@@ -64,7 +64,8 @@ class SwipeBanner<T extends BannerResource> extends StatelessWidget {
     if (banners?.isEmpty ?? true) {
       return Container();
     }
-    final imageWidth = MediaQuery.of(context).size.width - (margin?.horizontal ?? 0);
+    final imageWidth =
+        MediaQuery.of(context).size.width - (margin?.horizontal ?? 0);
     final height = imageWidth / ratio;
     return Container(
       margin: margin,
@@ -84,7 +85,7 @@ class SwipeBanner<T extends BannerResource> extends StatelessWidget {
           builder: itemBuilder ??
               (BuildContext context, dynamic data, int index) {
                 return CachedNetworkImage(
-                  imageUrl: (data as T)?.imageUrl ?? '',
+                  imageUrl: (data as T?)?.imageUrl ?? '',
                   width: imageWidth,
                   height: height,
                   fit: BoxFit.cover,
